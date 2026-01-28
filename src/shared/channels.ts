@@ -34,6 +34,15 @@ export const IPC_CHANNELS = {
   ORCHESTRATION_GET_MODE: 'orchestration:get-mode',
   ORCHESTRATION_SET_MODE: 'orchestration:set-mode',
 
+  // API Keys
+  API_KEYS_GET_STATUS: 'api-keys:get-status',
+  API_KEYS_GET: 'api-keys:get',
+  API_KEYS_SET: 'api-keys:set',
+  API_KEYS_VALIDATE: 'api-keys:validate',
+
+  // Copilot status
+  COPILOT_STATUS: 'copilot:status',
+
   // LinkedIn
   LINKEDIN_CONNECT: 'linkedin:connect',
   LINKEDIN_DISCONNECT: 'linkedin:disconnect',

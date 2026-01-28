@@ -7,6 +7,15 @@ import {
 } from '../../shared/types'
 import { UserInputResponse } from '../../shared/workflow-types'
 import { createRun, getRun, listRuns, updateRun } from '../storage/runs'
+import { 
+  loadApiKeys, 
+  saveApiKeys, 
+  getApiKey, 
+  getApiKeyStatus, 
+  validateOpenAiKey, 
+  validateExaKey,
+  ApiKeys 
+} from '../storage/settings'
 import { createOrchestrator, IWorkflowOrchestrator, setOrchestrationMode, getOrchestrationMode, OrchestrationMode } from '../orchestration'
 import { LinkedInService, LinkedInCredentials } from '../services/linkedin'
 import * as fs from 'fs'
@@ -14,6 +23,7 @@ import * as path from 'path'
 
 let orchestrator: IWorkflowOrchestrator | null = null
 let linkedInService: LinkedInService | null = null
+let copilotStatus: { available: boolean; error?: string } = { available: false }
 
 // Settings storage path
 const getSettingsPath = () => {
