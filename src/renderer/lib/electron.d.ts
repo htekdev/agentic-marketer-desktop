@@ -41,6 +41,25 @@ interface WorkflowPendingInputPayload {
   pendingInput: PendingInput
 }
 
+interface ApiKeyStatus {
+  openaiApiKey: boolean
+  exaApiKey: boolean
+  linkedinClientId: boolean
+  linkedinClientSecret: boolean
+}
+
+interface ApiKeysMasked {
+  openaiApiKey: string | null
+  exaApiKey: string | null
+  linkedinClientId: string | null
+  linkedinClientSecret: string | null
+}
+
+interface CopilotStatus {
+  available: boolean
+  error?: string
+}
+
 declare global {
   interface Window {
     electron: {
@@ -60,6 +79,13 @@ declare global {
         linkedInConnect: () => Promise<{ success: boolean; error?: string }>
         linkedInDisconnect: () => Promise<{ success: boolean }>
         linkedInPublish: (payload: LinkedInPublishPayload) => Promise<LinkedInPublishResult>
+        // API Keys
+        getApiKeyStatus: () => Promise<ApiKeyStatus>
+        getApiKeys: () => Promise<ApiKeysMasked>
+        setApiKeys: (keys: { openaiApiKey?: string; exaApiKey?: string; linkedinClientId?: string; linkedinClientSecret?: string }) => Promise<{ success: boolean }>
+        validateApiKey: (key: 'openai' | 'exa', value: string) => Promise<{ valid: boolean; error?: string }>
+        // Copilot status
+        getCopilotStatus: () => Promise<CopilotStatus>
         // Workflow user response (new state machine)
         respondToWorkflow: (runId: string, response: UserInputResponse) => Promise<{ success: boolean }>
         // Legacy agent user response

@@ -104,9 +104,9 @@ export function setupIpcHandlers(mainWindow: BrowserWindow): void {
   // Initialize LinkedIn service
   linkedInService = new LinkedInService(mainWindow)
   
-  // Configure LinkedIn if env vars are set
-  const linkedInClientId = process.env.LINKEDIN_CLIENT_ID
-  const linkedInClientSecret = process.env.LINKEDIN_CLIENT_SECRET
+  // Configure LinkedIn from settings or env vars
+  const linkedInClientId = getApiKey('linkedinClientId')
+  const linkedInClientSecret = getApiKey('linkedinClientSecret')
   if (linkedInClientId && linkedInClientSecret) {
     linkedInService.configure({
       clientId: linkedInClientId,
@@ -120,13 +120,22 @@ export function setupIpcHandlers(mainWindow: BrowserWindow): void {
       console.log('[linkedin] Restored credentials for:', savedCredentials.userName)
     }
   } else {
-    console.log('[linkedin] Not configured - set LINKEDIN_CLIENT_ID and LINKEDIN_CLIENT_SECRET')
+    console.log('[linkedin] Not configured - set LinkedIn credentials in Settings')
   }
   
-  // Initialize the orchestrator asynchronously
-  orchestrator.initialize().catch(err => {
-    console.error('Failed to initialize Workflow Orchestrator:', err)
-  })
+  // Initialize the orchestrator asynchronously and track Copilot status
+  orchestrator.initialize()
+    .then(() => {
+      copilotStatus = { available: true }
+      console.log('[handlers] Copilot SDK initialized successfully')
+    })
+    .catch(err => {
+      console.error('[handlers] Failed to initialize Copilot SDK:', err)
+      copilotStatus = { 
+        available: false, 
+        error: err.message || 'Failed to connect to GitHub Copilot. Please ensure you have a Copilot subscription and are logged in.'
+      }
+    })
 
   // Clean up on app quit
   app.on('before-quit', async () => {
@@ -247,11 +256,13 @@ export function setupIpcHandlers(mainWindow: BrowserWindow): void {
   // LinkedIn handlers
   ipcMain.handle(IPC_CHANNELS.LINKEDIN_STATUS, async () => {
     const credentials = linkedInService?.getCredentials()
+    const clientId = getApiKey('linkedinClientId')
+    const clientSecret = getApiKey('linkedinClientSecret')
     return {
       connected: linkedInService?.isConnected() || false,
       userName: credentials?.userName || null,
       profilePicture: credentials?.profilePicture || null,
-      configured: !!(process.env.LINKEDIN_CLIENT_ID && process.env.LINKEDIN_CLIENT_SECRET)
+      configured: !!(clientId && clientSecret)
     }
   })
 
@@ -295,5 +306,52 @@ export function setupIpcHandlers(mainWindow: BrowserWindow): void {
     } else {
       return linkedInService.publishTextPost(payload.text)
     }
+  })
+
+  // API Keys handlers
+  ipcMain.handle(IPC_CHANNELS.API_KEYS_GET_STATUS, async () => {
+    return getApiKeyStatus()
+  })
+
+  ipcMain.handle(IPC_CHANNELS.API_KEYS_GET, async () => {
+    // Return masked keys for display (only last 4 chars visible)
+    const keys = loadApiKeys()
+    return {
+      openaiApiKey: keys.openaiApiKey ? `...${keys.openaiApiKey.slice(-4)}` : null,
+      exaApiKey: keys.exaApiKey ? `...${keys.exaApiKey.slice(-4)}` : null,
+      linkedinClientId: keys.linkedinClientId || null,
+      linkedinClientSecret: keys.linkedinClientSecret ? `...${keys.linkedinClientSecret.slice(-4)}` : null
+    }
+  })
+
+  ipcMain.handle(IPC_CHANNELS.API_KEYS_SET, async (_event, payload: Partial<ApiKeys>) => {
+    const existing = loadApiKeys()
+    const updated = { ...existing, ...payload }
+    saveApiKeys(updated)
+    
+    // Reconfigure LinkedIn if credentials changed
+    if (payload.linkedinClientId || payload.linkedinClientSecret) {
+      const clientId = getApiKey('linkedinClientId')
+      const clientSecret = getApiKey('linkedinClientSecret')
+      if (clientId && clientSecret && linkedInService) {
+        linkedInService.configure({ clientId, clientSecret })
+      }
+    }
+    
+    return { success: true }
+  })
+
+  ipcMain.handle(IPC_CHANNELS.API_KEYS_VALIDATE, async (_event, payload: { key: 'openai' | 'exa'; value: string }) => {
+    if (payload.key === 'openai') {
+      return validateOpenAiKey(payload.value)
+    } else if (payload.key === 'exa') {
+      return validateExaKey(payload.value)
+    }
+    return { valid: false, error: 'Unknown key type' }
+  })
+
+  // Copilot status handler
+  ipcMain.handle(IPC_CHANNELS.COPILOT_STATUS, async () => {
+    return copilotStatus
   })
 }

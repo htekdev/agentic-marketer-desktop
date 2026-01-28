@@ -62,6 +62,23 @@ contextBridge.exposeInMainWorld('electron', {
     linkedInPublish: (payload: { text: string; imageUrl?: string }) =>
       ipcRenderer.invoke(IPC_CHANNELS.LINKEDIN_PUBLISH, payload),
 
+    // API Keys
+    getApiKeyStatus: () =>
+      ipcRenderer.invoke(IPC_CHANNELS.API_KEYS_GET_STATUS),
+    
+    getApiKeys: () =>
+      ipcRenderer.invoke(IPC_CHANNELS.API_KEYS_GET),
+    
+    setApiKeys: (keys: { openaiApiKey?: string; exaApiKey?: string; linkedinClientId?: string; linkedinClientSecret?: string }) =>
+      ipcRenderer.invoke(IPC_CHANNELS.API_KEYS_SET, keys),
+    
+    validateApiKey: (key: 'openai' | 'exa', value: string) =>
+      ipcRenderer.invoke(IPC_CHANNELS.API_KEYS_VALIDATE, { key, value }),
+
+    // Copilot status
+    getCopilotStatus: () =>
+      ipcRenderer.invoke(IPC_CHANNELS.COPILOT_STATUS),
+
     // Workflow user response (new state machine pattern)
     respondToWorkflow: (runId: string, response: UserInputResponse) =>
       ipcRenderer.invoke(IPC_CHANNELS.WORKFLOW_USER_RESPONSE, { runId, response }),
