@@ -21,7 +21,10 @@
     "linkedin",
     "marketing"
   ],
-  "author": "htekdev",
+  "author": {
+    "name": "htekdev",
+    "email": "htekdev@users.noreply.github.com"
+  },
   "license": "MIT",
   "repository": {
     "type": "git",
