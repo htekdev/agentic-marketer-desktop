@@ -7,6 +7,8 @@ AI-powered LinkedIn post creator with intelligent agentic workflows. Built with 
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript)
 ![Copilot SDK](https://img.shields.io/badge/Copilot_SDK-0.1.18-000000?logo=github)
 
+![Agentic Marketer Screenshot](resources/screenshot.png)
+
 ## Overview
 
 Agentic Marketer is a desktop application that helps you create high-quality LinkedIn posts using AI. Simply describe what you want to post about, and the app will:
