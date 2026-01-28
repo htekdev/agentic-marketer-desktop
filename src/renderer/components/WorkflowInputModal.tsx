@@ -12,7 +12,7 @@ interface WorkflowInputModalProps {
 }
 
 export function WorkflowInputModal({ pendingInput, onRespond, onCancel }: WorkflowInputModalProps) {
-  const { phase, pendingInput: input } = pendingInput
+  const { pendingInput: input } = pendingInput
 
   // Render based on input type
   switch (input.type) {
@@ -37,7 +37,6 @@ export function WorkflowInputModal({ pendingInput, onRespond, onCancel }: Workfl
       return (
         <ImprovementsModal
           improvements={input.improvements}
-          currentDraft={input.currentDraft}
           onRespond={onRespond}
           onCancel={onCancel}
         />
@@ -304,12 +303,10 @@ function FindingsModal({
 // Improvements Modal (Critic phase)
 function ImprovementsModal({ 
   improvements, 
-  currentDraft,
   onRespond, 
   onCancel 
 }: { 
   improvements: ImprovementSuggestion[]
-  currentDraft: string
   onRespond: (response: UserInputResponse) => Promise<void>
   onCancel: () => Promise<void>
 }) {

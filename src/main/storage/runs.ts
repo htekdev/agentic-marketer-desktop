@@ -1,7 +1,7 @@
 import { app } from 'electron'
 import { join } from 'path'
 import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync } from 'fs'
-import { RunState, ResearchData, PositioningData, DraftData, ImageData } from '../../shared/types'
+import { RunState } from '../../shared/types'
 
 // Get the data directory path
 function getDataDir(): string {

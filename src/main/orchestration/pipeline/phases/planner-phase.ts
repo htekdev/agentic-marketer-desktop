@@ -1,7 +1,7 @@
 // Planner Phase - Analyzes request, asks ONLY if needed, outputs task list
 // Truly agentic - decides what it needs to know
 
-import { CopilotClient, CopilotSession, defineTool } from '@github/copilot-sdk'
+import { CopilotClient, defineTool } from '@github/copilot-sdk'
 import { BrowserWindow } from 'electron'
 import { z } from 'zod'
 import {
@@ -67,6 +67,8 @@ interface AgenticPlan {
   audienceProfile: string  // Who we're writing for and what they care about
   visualDirection: string  // Guidance for image generation
   skipResearch?: boolean  // Skip research for simple edits
+  skipPositioning?: boolean  // Skip positioning phase
+  skipCritic?: boolean  // Skip critic phase
   skipImage?: boolean  // Skip image generation
   draftInstructions?: string  // Specific instructions for draft phase
   angle?: string  // If clear from context
@@ -217,28 +219,29 @@ Use submit_plan to define what should happen next.`
     }
   } else if (plan) {
     // Plan ready - convert to ContentPlan format for compatibility
+    const p = plan as AgenticPlan  // TypeScript inference helper
     const contentPlan: ContentPlan = {
-      topic: plan.topic,
-      angle: plan.angle || plan.intent,
-      targetAudience: plan.audienceProfile || 'LinkedIn professionals',
-      keyPoints: plan.researchTasks,
+      topic: p.topic,
+      angle: p.angle || p.intent,
+      targetAudience: p.audienceProfile || 'LinkedIn professionals',
+      keyPoints: p.researchTasks,
       tone: 'professional',
-      includeStats: plan.researchTasks.some(t => t.toLowerCase().includes('stat') || t.toLowerCase().includes('data')),
-      includeStory: plan.researchTasks.some(t => t.toLowerCase().includes('case') || t.toLowerCase().includes('example'))
+      includeStats: p.researchTasks.some((t: string) => t.toLowerCase().includes('stat') || t.toLowerCase().includes('data')),
+      includeStory: p.researchTasks.some((t: string) => t.toLowerCase().includes('case') || t.toLowerCase().includes('example'))
     }
     
     // Determine next phase based on plan
     let nextPhase: WorkflowState['phase'] = 'research'
     let statusMessage = ''
     
-    if (plan.skipResearch || plan.researchTasks.length === 0) {
+    if (p.skipResearch || p.researchTasks.length === 0) {
       // Skip research, go to positioning or draft
-      nextPhase = plan.skipPositioning ? 'draft' : 'positioning'
-      statusMessage = plan.draftInstructions 
-        ? `Got it! I'll update the draft: ${plan.draftInstructions.substring(0, 50)}...`
+      nextPhase = p.skipPositioning ? 'draft' : 'positioning'
+      statusMessage = p.draftInstructions 
+        ? `Got it! I'll update the draft: ${p.draftInstructions.substring(0, 50)}...`
         : `Got it! Updating the post...`
     } else {
-      statusMessage = `Got it! I'll research: ${plan.researchTasks.slice(0, 2).join(', ')}${plan.researchTasks.length > 2 ? '...' : ''}`
+      statusMessage = `Got it! I'll research: ${p.researchTasks.slice(0, 2).join(', ')}${p.researchTasks.length > 2 ? '...' : ''}`
     }
     
     console.log('[planner-phase] Plan complete, moving to:', nextPhase)
@@ -246,13 +249,13 @@ Use submit_plan to define what should happen next.`
       ...state,
       phase: nextPhase,
       plan: contentPlan,
-      visualDirection: plan.visualDirection,
+      visualDirection: p.visualDirection,
       // Pass through control flags
-      skipResearch: plan.skipResearch,
-      skipPositioning: plan.skipPositioning,
-      skipCritic: plan.skipCritic,
-      skipImage: plan.skipImage,
-      draftInstructions: plan.draftInstructions,
+      skipResearch: p.skipResearch,
+      skipPositioning: p.skipPositioning,
+      skipCritic: p.skipCritic,
+      skipImage: p.skipImage,
+      draftInstructions: p.draftInstructions,
       pendingInput: null,
       messages: addMessage(state, 'agent', statusMessage, 'planner').messages
     }

@@ -59,7 +59,7 @@ export function DraftPanel({ data, isLoading }: DraftPanelProps) {
     try {
       const result = await window.electron.invoke.linkedInPublish({
         text: data.fullText,
-        imageUrl: currentRun?.image?.url
+        imageUrl: currentRun?.image?.url ?? undefined
       })
       
       if (result.success) {

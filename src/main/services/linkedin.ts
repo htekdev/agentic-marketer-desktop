@@ -1,4 +1,5 @@
-import { BrowserWindow, shell } from 'electron'
+import { shell } from 'electron'
+import type { BrowserWindow } from 'electron'
 import { createServer, IncomingMessage, ServerResponse } from 'http'
 import { URL } from 'url'
 
@@ -32,10 +33,9 @@ export interface LinkedInConfig {
 export class LinkedInService {
   private credentials: LinkedInCredentials | null = null
   private config: LinkedInConfig | null = null
-  private mainWindow: BrowserWindow
 
-  constructor(mainWindow: BrowserWindow) {
-    this.mainWindow = mainWindow
+  constructor(_mainWindow: BrowserWindow) {
+    // mainWindow kept for future use (e.g., in-app OAuth flow)
   }
 
   /**
@@ -339,7 +339,7 @@ export class LinkedInService {
           'Authorization': `Bearer ${this.credentials.accessToken}`,
           'Content-Type': 'image/png'
         },
-        body: imageBuffer
+        body: new Uint8Array(imageBuffer)
       })
 
       if (!uploadResult.ok) {

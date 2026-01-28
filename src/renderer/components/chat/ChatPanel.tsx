@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
-import { Send, AtSign, Brain, Wrench, Sparkles, Loader2 } from 'lucide-react'
+import { Send, AtSign, Wrench, Loader2 } from 'lucide-react'
 import { useRun } from '../../hooks/useRun'
-import { AgentId, Message } from '../../../shared/types'
+import { AgentId } from '../../../shared/types'
 import { ChatMessage } from './ChatMessage'
 
 const AGENTS: { id: AgentId; name: string; color: string; bgColor: string }[] = [

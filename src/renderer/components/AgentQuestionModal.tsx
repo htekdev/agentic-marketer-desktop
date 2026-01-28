@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { X, Check, MessageCircle, Lightbulb, Search, Sparkles } from 'lucide-react'
-import { AgentQuestion, AgentReviewRequest, Improvement } from '../../../shared/types'
+import { AgentQuestion, AgentReviewRequest, Improvement } from '../../shared/types'
 
 interface AgentQuestionModalProps {
   question: AgentQuestion | AgentReviewRequest
@@ -39,9 +39,9 @@ export function AgentQuestionModal({ question, onRespond, onCancel }: AgentQuest
 
   const selectAll = () => {
     if (isReviewRequest && 'improvements' in question && question.improvements) {
-      setSelectedIds(new Set(question.improvements.map(i => i.id)))
+      setSelectedIds(new Set(question.improvements.map((i: Improvement) => i.id)))
     } else if (isReviewRequest && 'researchFindings' in question && question.researchFindings) {
-      setSelectedIds(new Set(question.researchFindings.map(f => f.id)))
+      setSelectedIds(new Set(question.researchFindings.map((f: { id: string }) => f.id)))
     }
   }
 
@@ -75,7 +75,7 @@ export function AgentQuestionModal({ question, onRespond, onCancel }: AgentQuest
 
             {/* Options */}
             <div className="space-y-2">
-              {q.options.map((option, i) => (
+              {q.options.map((option: string, i: number) => (
                 <button
                   key={i}
                   onClick={() => {
@@ -155,7 +155,7 @@ export function AgentQuestionModal({ question, onRespond, onCancel }: AgentQuest
             <p className="text-zinc-400 mb-4">Select the improvements you'd like to apply:</p>
 
             <div className="space-y-3">
-              {reviewReq.improvements.map((improvement) => (
+              {reviewReq.improvements.map((improvement: Improvement) => (
                 <div
                   key={improvement.id}
                   onClick={() => toggleSelection(improvement.id)}
@@ -247,7 +247,7 @@ export function AgentQuestionModal({ question, onRespond, onCancel }: AgentQuest
             <p className="text-zinc-400 mb-4">I found these interesting angles. Select the ones you want to focus on:</p>
 
             <div className="space-y-3">
-              {reviewReq.researchFindings.map((finding) => (
+              {reviewReq.researchFindings.map((finding: { id: string; title: string; summary: string; source?: string }) => (
                 <div
                   key={finding.id}
                   onClick={() => toggleSelection(finding.id)}

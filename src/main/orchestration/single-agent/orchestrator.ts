@@ -7,15 +7,11 @@ import { CopilotClient, CopilotSession, defineTool } from '@github/copilot-sdk'
 import { z } from 'zod'
 import {
   WorkflowState,
-  WorkflowEvent,
-  UserInputResponse,
-  createInitialState,
-  addMessage
+  UserInputResponse
 } from '../../../shared/workflow-types'
 import { IPC_CHANNELS } from '../../../shared/channels'
-import { updateRun, getRun } from '../../storage/runs'
+import { updateRun } from '../../storage/runs'
 import { IWorkflowOrchestrator } from '../interface'
-import { AgentEvent } from '../../../shared/types'
 
 const SYSTEM_PROMPT = `You are a LinkedIn Content Creator assistant. You help users create compelling LinkedIn posts through natural conversation.
 
@@ -221,9 +217,18 @@ export class SingleAgentOrchestrator extends EventEmitter implements IWorkflowOr
           handler: async ({ facts, sources }) => {
             console.log(`[single-agent] Saving ${facts.length} research facts`)
             
+            // Convert sources to full Source type
+            const fullSources = (sources || []).map((s, i) => ({
+              id: `src-${Date.now()}-${i}`,
+              title: s.title,
+              url: s.url,
+              content: '',
+              addedAt: new Date().toISOString()
+            }))
+            
             // Store research
             runState.research = facts
-            runState.sources = sources || []
+            runState.sources = fullSources
             this.runStates.set(runId, runState)
             
             // Update research panel
@@ -232,7 +237,7 @@ export class SingleAgentOrchestrator extends EventEmitter implements IWorkflowOr
               panel: 'research',
               data: {
                 facts,
-                sources: sources || []
+                sources: fullSources
               }
             })
 
@@ -240,7 +245,7 @@ export class SingleAgentOrchestrator extends EventEmitter implements IWorkflowOr
             await updateRun(runId, {
               research: {
                 facts,
-                sources: sources || [],
+                sources: fullSources,
                 claims: []
               }
             })
@@ -255,12 +260,18 @@ export class SingleAgentOrchestrator extends EventEmitter implements IWorkflowOr
           parameters: z.object({
             audience: z.string().describe('Target audience description'),
             tone: z.string().describe('Tone of voice (e.g., professional, conversational, bold)'),
-            angle: z.string().describe('Unique angle or perspective for the post')
+            angle: z.string().describe('Unique angle or perspective for the post'),
+            painPoints: z.array(z.string()).optional().describe('Pain points the audience faces')
           }),
-          handler: async ({ audience, tone, angle }) => {
+          handler: async ({ audience, tone, angle, painPoints }) => {
             console.log(`[single-agent] Setting positioning: ${audience}`)
             
-            const positioning = { audience, tone, angle }
+            const positioning = { 
+              audience, 
+              tone, 
+              angle,
+              painPoints: painPoints || []
+            }
             runState.positioning = positioning
             this.runStates.set(runId, runState)
             

@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react'
-import { RunState, Message, AgentMessagePayload, AgentEvent, PanelUpdatePayload, AgentId, ToolCall, AgentQuestion, AgentReviewRequest } from '../../shared/types'
+import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react'
+import { RunState, Message, AgentMessagePayload, AgentEvent, PanelUpdatePayload, AgentId, AgentQuestion, AgentReviewRequest } from '../../shared/types'
 import { WorkflowEvent, PendingInput, UserInputResponse, WorkflowPhase } from '../../shared/workflow-types'
 
 // Activity item for the live feed
@@ -36,7 +36,7 @@ interface RunContextValue {
   startNewChat: () => void
   loadRun: (runId: string) => Promise<void>
   sendMessage: (content: string, mention?: AgentId) => Promise<void>
-  editPanel: (panel: string, data: Record<string, unknown>) => Promise<void>
+  editPanel: (panel: 'research' | 'positioning' | 'draft' | 'image', data: Record<string, unknown>) => Promise<void>
   clearActivity: () => void
   // New workflow response
   respondToWorkflow: (response: UserInputResponse) => Promise<void>
@@ -176,7 +176,7 @@ export function RunProvider({ children }: RunProviderProps) {
     })
 
     // Legacy agent message handler (for backward compatibility)
-    const unsubAgentMessage = window.electron.on.agentMessage((payload: AgentMessagePayload) => {
+    const unsubAgentMessage = window.electron.on.agentMessage((_payload: AgentMessagePayload) => {
       // Handled by agentEvent now, but keep for backward compat
     })
 
@@ -192,9 +192,11 @@ export function RunProvider({ children }: RunProviderProps) {
       if (currentRun && payload.runId === currentRun.id) {
         setCurrentRun(prev => {
           if (!prev) return prev
+          const panelKey = payload.panel as 'research' | 'positioning' | 'draft' | 'image'
+          const existingPanel = prev[panelKey]
           return {
             ...prev,
-            [payload.panel]: { ...prev[payload.panel as keyof RunState], ...payload.data }
+            [panelKey]: existingPanel ? { ...existingPanel, ...payload.data } : payload.data
           }
         })
       }
@@ -342,7 +344,7 @@ export function RunProvider({ children }: RunProviderProps) {
     }
   }, [currentRun])
 
-  const editPanel = useCallback(async (panel: string, data: Record<string, unknown>) => {
+  const editPanel = useCallback(async (panel: 'research' | 'positioning' | 'draft' | 'image', data: Record<string, unknown>) => {
     if (!currentRun) return
     
     try {

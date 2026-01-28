@@ -1,5 +1,5 @@
 import { Message, AgentId } from '../../../shared/types'
-import { User, Bot, Search, Globe, Lightbulb, PenTool, Image, ClipboardList, MessageCircle } from 'lucide-react'
+import { User, Bot, Search, Lightbulb, PenTool, Image, ClipboardList, MessageCircle } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 
 const AGENT_CONFIG: Record<AgentId, { name: string; color: string; bgColor: string; icon: typeof Bot }> = {

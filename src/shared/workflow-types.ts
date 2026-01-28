@@ -1,6 +1,6 @@
 // Workflow State Machine Types
 
-import type { AgentId, ResearchData, PositioningData, DraftData, Message } from './types'
+import type { AgentId, ResearchData, PositioningData, Message } from './types'
 
 // All possible workflow phases
 export type WorkflowPhase =

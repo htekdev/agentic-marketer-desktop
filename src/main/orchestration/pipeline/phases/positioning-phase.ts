@@ -109,18 +109,19 @@ Use submit_positioning to provide a clear strategic direction for the LinkedIn p
   }
 
   if (positioning) {
+    const pos = positioning as PositioningData  // TypeScript inference helper
     // Emit panel update
     mainWindow.webContents.send(IPC_CHANNELS.PANEL_UPDATE, {
       runId: state.runId,
       panel: 'positioning',
-      data: positioning
+      data: pos
     })
 
     return {
       ...state,
       phase: 'draft',
-      positioning,
-      messages: addMessage(state, 'agent', `Positioning defined: "${positioning.angle}". Now writing the draft...`, 'positioning').messages
+      positioning: pos,
+      messages: addMessage(state, 'agent', `Positioning defined: "${pos.angle}". Now writing the draft...`, 'positioning').messages
     }
   } else {
     // Create default positioning

@@ -1,15 +1,14 @@
 // Research Phase - Executes research tasks from planner
 // NO user checkpoint - trusts the agent to find relevant info
 
-import { CopilotClient, CopilotSession, defineTool } from '@github/copilot-sdk'
+import { CopilotClient, defineTool } from '@github/copilot-sdk'
 import { BrowserWindow } from 'electron'
 import { z } from 'zod'
 import {
   WorkflowState,
-  ResearchFinding,
   addMessage
 } from '../../../../shared/workflow-types'
-import { ResearchData, Source, AgentEvent } from '../../../../shared/types'
+import { ResearchData, AgentEvent } from '../../../../shared/types'
 import { IPC_CHANNELS } from '../../../../shared/channels'
 
 const RESEARCH_PROMPT = `You are a research specialist finding information for LinkedIn content.

@@ -3,8 +3,6 @@ import { IPC_CHANNELS } from '../../shared/channels'
 import { 
   UserMessagePayload, 
   CreateRunPayload, 
-  RunState,
-  AgentId,
   AgentUserResponse
 } from '../../shared/types'
 import { UserInputResponse } from '../../shared/workflow-types'
@@ -206,7 +204,7 @@ export function setupIpcHandlers(mainWindow: BrowserWindow): void {
     }
   })
 
-  ipcMain.handle(IPC_CHANNELS.SETTINGS_SET, async (_event, settings) => {
+  ipcMain.handle(IPC_CHANNELS.SETTINGS_SET, async (_event, _settings) => {
     // TODO: Implement settings storage
     return { success: true }
   })
