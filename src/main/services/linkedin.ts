@@ -339,7 +339,7 @@ export class LinkedInService {
           'Authorization': `Bearer ${this.credentials.accessToken}`,
           'Content-Type': 'image/png'
         },
-        body: new Uint8Array(imageBuffer)
+        body: imageBuffer as unknown as BodyInit
       })
 
       if (!uploadResult.ok) {
