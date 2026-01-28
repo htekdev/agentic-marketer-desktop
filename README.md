@@ -9,6 +9,32 @@ AI-powered LinkedIn post creator with intelligent agentic workflows. Built with 
 
 ![Agentic Marketer Screenshot](resources/screenshot.png)
 
+## 📥 Download
+
+**Get the latest release for your platform:**
+
+| Platform | Download |
+|----------|----------|
+| **Windows** | [Agentic.Marketer.Setup.exe](https://github.com/htekdev/agentic-marketer-desktop/releases/latest) |
+| **macOS (Apple Silicon)** | [Agentic.Marketer-arm64.dmg](https://github.com/htekdev/agentic-marketer-desktop/releases/latest) |
+| **macOS (Intel)** | [Agentic.Marketer.dmg](https://github.com/htekdev/agentic-marketer-desktop/releases/latest) |
+| **Linux** | [Agentic.Marketer.AppImage](https://github.com/htekdev/agentic-marketer-desktop/releases/latest) |
+
+👉 **[View All Releases](https://github.com/htekdev/agentic-marketer-desktop/releases)**
+
+### Quick Start
+
+1. **Download** the installer for your platform above
+2. **Install** and launch the app
+3. **Configure API keys** in Settings (⚙️ gear icon):
+   - OpenAI API Key (for image generation)
+   - Exa API Key (for web research)
+4. **Start creating** - type what you want to post about!
+
+> **Requires:** [GitHub Copilot subscription](https://github.com/features/copilot) - The app uses GitHub Copilot SDK for AI text generation.
+
+---
+
 ## Overview
 
 Agentic Marketer is a desktop application that helps you create high-quality LinkedIn posts using AI. Simply describe what you want to post about, and the app will:
