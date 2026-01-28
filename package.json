@@ -1,0 +1,49 @@
+{
+  "name": "agentic-marketer-desktop",
+  "version": "1.0.0",
+  "description": "AI-powered LinkedIn post creator with agentic workflow",
+  "main": "./out/main/index.js",
+  "scripts": {
+    "dev": "electron-vite dev",
+    "build": "electron-vite build",
+    "preview": "electron-vite preview",
+    "start": "electron .",
+    "typecheck": "tsc --noEmit",
+    "package": "electron-vite build && electron-builder"
+  },
+  "keywords": [
+    "electron",
+    "ai",
+    "linkedin",
+    "marketing"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@electron-toolkit/utils": "^4.0.0",
+    "@tailwindcss/typography": "^0.5.19",
+    "@types/react": "^19.2.9",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.2",
+    "electron": "^40.0.0",
+    "electron-vite": "^5.0.0",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
+    "tailwindcss": "^3.4.19",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.1"
+  },
+  "dependencies": {
+    "@github/copilot-sdk": "^0.1.18",
+    "autoprefixer": "^10.4.23",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "dotenv": "^17.2.3",
+    "lucide-react": "^0.563.0",
+    "openai": "^6.16.0",
+    "postcss": "^8.5.6",
+    "react-markdown": "^10.1.0",
+    "tailwind-merge": "^3.4.0",
+    "zod": "^4.3.6"
+  }
+}
